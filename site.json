@@ -1,0 +1,102 @@
+{
+  "repo": "VREAD-corp/comprendre-mon-courrier",
+  "brand": "Courrier clair",
+  "logo_text": "Courrier <span>clair</span>",
+  "lang": "fr",
+  "accent": "#1d4ed8",
+  "updated": "2026-10-11",
+  "nav": {
+    "fr": [
+      [
+        "Accueil",
+        "index.html"
+      ],
+      [
+        "Tous les guides",
+        "guides/index.html"
+      ],
+      [
+        "Check-list PDF",
+        "index.html#telecharger"
+      ],
+      [
+        "Avertissement",
+        "avertissement.html"
+      ],
+      [
+        "Version payante",
+        "version-payante.html"
+      ]
+    ],
+    "en": [
+      [
+        "Home",
+        "en/index.html"
+      ],
+      [
+        "All guides",
+        "en/guides/index.html"
+      ],
+      [
+        "Checklist PDF",
+        "en/index.html#download"
+      ],
+      [
+        "Disclaimer",
+        "en/disclaimer.html"
+      ]
+    ]
+  },
+  "i18n": {
+    "fr": {
+      "locale": "fr_FR",
+      "skip": "Aller au contenu",
+      "home": "",
+      "nav_label": "Navigation principale",
+      "switch": "English",
+      "footer_product": "Un produit de READ FRANCE SAS · Contenus sous licence CC BY 4.0",
+      "footer_links": [
+        [
+          "Mentions légales",
+          "mentions-legales.html"
+        ],
+        [
+          "Confidentialité",
+          "confidentialite.html"
+        ],
+        [
+          "CGV (projet)",
+          "cgv.html"
+        ],
+        [
+          "Code source et contact",
+          "{{repo_url}}"
+        ]
+      ],
+      "footer_tracking": "Aucun cookie, aucun traceur, aucune donnée personnelle collectée."
+    },
+    "en": {
+      "locale": "en_GB",
+      "skip": "Skip to content",
+      "home": "en/",
+      "nav_label": "Main navigation",
+      "switch": "Français",
+      "footer_product": "A product of READ FRANCE SAS · Content licensed CC BY 4.0",
+      "footer_links": [
+        [
+          "Legal notice (FR)",
+          "mentions-legales.html"
+        ],
+        [
+          "Privacy (FR)",
+          "confidentialite.html"
+        ],
+        [
+          "Source code and contact",
+          "{{repo_url}}"
+        ]
+      ],
+      "footer_tracking": "No cookies, no trackers, no personal data collected."
+    }
+  }
+}
