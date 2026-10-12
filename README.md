@@ -1,6 +1,6 @@
 # Courrier clair — comprendre un courrier administratif français
 
-Site : https://vread-corp.github.io/comprendre-mon-courrier/ (FR) · https://vread-corp.github.io/comprendre-mon-courrier/en/ (EN)
+Site : https://outils.vread.fr/comprendre-mon-courrier/ (FR) · https://outils.vread.fr/comprendre-mon-courrier/en/ (EN)
 
 21 guides gratuits, en français et en anglais simples, sur les courriers les plus fréquents (CAF, impôts, ANEF / titre de
 séjour, CPAM, URSSAF, amendes) : ce que c'est, délais à vérifier, quoi faire, liens officiels. Un produit de READ FRANCE SAS.
