@@ -73,7 +73,7 @@
           "{{repo_url}}"
         ]
       ],
-      "footer_tracking": "Aucun cookie, aucun traceur, aucune donnée personnelle collectée."
+      "footer_tracking": "Aucun cookie, aucune donnée personnelle collectée. Mesure d’audience anonyme et agrégée, sans identifiant."
     },
     "en": {
       "locale": "en_GB",
@@ -96,7 +96,7 @@
           "{{repo_url}}"
         ]
       ],
-      "footer_tracking": "No cookies, no trackers, no personal data collected."
+      "footer_tracking": "No cookies, no personal data collected. Anonymous, aggregate audience statistics, no identifier."
     }
   }
 }
