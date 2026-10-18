@@ -71,8 +71,8 @@
           "cgv.html"
         ],
         [
-          "Code source et contact",
-          "{{repo_url}}"
+          "Contact",
+          "mailto:contact@jalonel.com"
         ]
       ],
       "footer_tracking": "Aucun cookie, aucune donnée personnelle collectée. Mesure d’audience anonyme et agrégée, sans identifiant."
@@ -94,8 +94,8 @@
           "confidentialite.html"
         ],
         [
-          "Source code and contact",
-          "{{repo_url}}"
+          "Contact",
+          "mailto:contact@jalonel.com"
         ]
       ],
       "footer_tracking": "No cookies, no personal data collected. Anonymous, aggregate audience statistics, no identifier."

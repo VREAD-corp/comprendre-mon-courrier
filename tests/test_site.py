@@ -5,10 +5,13 @@
 - titles and descriptions unique across indexable pages
 - every internal link / asset resolves to a built file (and #anchors exist)
 - images have alt text; no third-party scripts, iframes or http:// links
-- every page loads mesure.js then cro.js (site = repo name, France backend), vendored byte-identical
+- every page loads mesure.js then cro.js (site = repo name, France backend), vendored byte-identical from
+  octave-checkout gas/web/jalonel/; no served file mentions vread; contact@jalonel.com in footer and legal pages
 - sitemap.xml lists every indexable page; robots.txt points to it
 """
 import json
+import os
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -141,7 +144,7 @@ def main():
             errors.append(f"{where}: want mesure.js then cro.js, got {srcs}")
         else:
             cro = p.scripts[1]
-            if (cro.get("data-site"), cro.get("data-api"), cro.get("data-hosts")) != (SLUG, TRACK_API, HOST + " outils.vread.fr"):
+            if (cro.get("data-site"), cro.get("data-api"), cro.get("data-hosts")) != (SLUG, TRACK_API, HOST):
                 errors.append(f"{where}: cro.js data-site/data-api/data-hosts")
             if not all("defer" in s for s in p.scripts) or any(s.get("type") == "module" for s in p.scripts):
                 errors.append(f"{where}: snippets must be classic deferred scripts")
@@ -185,13 +188,29 @@ def main():
         errors.append("CNAME does not hold " + HOST)
     if (OUT / (INDEXNOW_KEY + ".txt")).read_text() != INDEXNOW_KEY:
         errors.append("IndexNow key file missing at the site root")
+    # Jalonel brand only: no mention of the Vread reading sites in any served file; contact = contact@jalonel.com.
+    for f in sorted(OUT.rglob("*")):
+        if f.is_file() and f.suffix in (".html", ".js", ".css", ".json", ".xml", ".txt", ".svg"):
+            text = f.read_text(encoding="utf-8")
+            if re.search(r"vread", text.replace("github.com/VREAD-corp/", ""), re.I):  # repo links: see step 4
+                errors.append(f"{f.relative_to(OUT)}: mentions vread")
     for rel, p in pages.items():
-        if "outils.vread.fr/comprendre-mon-courrier" in (OUT / rel).read_text(encoding="utf-8"):
-            errors.append(f"{rel}: old outils.vread.fr URL")
+        if "mailto:contact@jalonel.com" not in p.links:
+            errors.append(f"{rel}: footer has no mailto:contact@jalonel.com")
+    for rel in ("mentions-legales.html", "confidentialite.html", "cgv.html"):
+        if rel in pages and "contact@jalonel.com" not in (OUT / rel).read_text(encoding="utf-8").split("<footer")[0]:
+            errors.append(f"{rel}: contact@jalonel.com missing from the page body")
     for name in ("mesure.js", "cro.js"):
         js = (ROOT / "assets" / name).read_text(encoding="utf-8")
         if name == "mesure.js" and (TRACK_API not in js or "octave_notrack" not in js or "v:2" not in js):
             errors.append("assets/mesure.js is not the octave-checkout snippet (v:2, octave_notrack)")
+    # Byte-identical to octave-checkout gas/web/jalonel/ when a checkout of it is at hand (skipped in CI).
+    for oc in (os.environ.get("OCTAVE_CHECKOUT"), ROOT.parent / "octave-checkout", ROOT.parent.parent / "octave-checkout"):
+        if oc and (Path(oc) / "gas/web/jalonel/mesure.js").exists():
+            for name in ("mesure.js", "cro.js"):
+                if (Path(oc) / "gas/web/jalonel" / name).read_bytes() != (ROOT / "assets" / name).read_bytes():
+                    errors.append(f"assets/{name} differs from octave-checkout gas/web/jalonel/{name}")
+            break
     for e in errors:
         print("FAIL", e)
     print(f"{len(pages)} pages checked, {len(errors)} errors")

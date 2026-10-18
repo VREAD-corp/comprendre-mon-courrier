@@ -20,7 +20,7 @@ OUT = ROOT / "_site"
 
 def load_site():
     site = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
-    # Served at the root of its own Jalonel subdomain since 2026-10-16 (was outils.vread.fr/comprendre-mon-courrier/).
+    # Served at the root of its own Jalonel subdomain since 2026-10-16.
     site.setdefault("base", "/")
     site["origin"] = site.get("origin", "https://courrier.jalonel.com")
     site["repo_url"] = "https://github.com/" + site["repo"]
@@ -30,7 +30,7 @@ def load_site():
 
 
 # Anonymous audience counter (mesure.js) and aggregate behaviour counters (cro.js): both vendored byte-identical from
-# VREAD-corp/octave-checkout gas/web/ (never edit the copies), sent to the France backend octave-pay-gas (`track`
+# VREAD-corp/octave-checkout gas/web/jalonel/ (the Jalonel copies of gas/web/; never edit the copies), sent to the France backend octave-pay-gas (`track`
 # action, `site` = repo name, whitelisted there; mesure.js maps the courrier.jalonel.com host to that site id). The ?v= content hash makes crawlers' renderers drop an old copy.
 TRACK_API = "https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec"
 MESURE_V = hashlib.sha256((ROOT / "assets" / "mesure.js").read_bytes()).hexdigest()[:8]
@@ -58,11 +58,13 @@ def tracking_tags(site):
     slug = site["repo"].split("/")[1]
     return (f'<script src="{site["base"]}assets/mesure.js?v={MESURE_V}" defer></script>\n'
             f'<script src="{site["base"]}assets/cro.js?v={CRO_V}" data-site="{slug}" data-api="{TRACK_API}" '
-            f'data-hosts="{site["origin"].split("//")[1]} outils.vread.fr" data-cta="[data-mesure]" defer></script>')
+            f'data-hosts="{site["origin"].split("//")[1]}" data-cta="[data-mesure]" defer></script>')
 
 
 # Publisher: the Jalonel brand (hub https://jalonel.com/), operated by READ FRANCE SAS.
 ORG_REF = {"@type": "Organization", "@id": "https://jalonel.com/#org", "name": "Jalonel", "url": "https://jalonel.com/",
+           "email": "contact@jalonel.com",
+           "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": "contact@jalonel.com"},
            "parentOrganization": {"@type": "Organization", "name": "READ FRANCE SAS", "identifier": "SIREN 988741773"}}
 
 # IndexNow key, served at the site root (https://courrier.jalonel.com/<key>.txt).
@@ -145,7 +147,7 @@ def layout(site, meta, body, rel):
         lang_switch = (f'<a class="lang" href="{site["base"]}{alt_path}" hreflang="{alt_lang}" '
                        f'lang="{alt_lang}">{site["i18n"][alt_lang]["switch"]}</a>')
     footer_links = " · ".join(
-        f'<a href="{href if href.startswith(("http", "{{")) else site["base"] + href}">{html.escape(label)}</a>'
+        f'<a href="{href if href.startswith(("http", "mailto:", "{{")) else site["base"] + href}">{html.escape(label)}</a>'
         for label, href in t["footer_links"])
     banner = ""
     if site.get("banner", {}).get(lang):
