@@ -24,7 +24,7 @@ BASE = SITE.get("base", "/")
 ORIGIN = SITE.get("origin", "https://courrier.jalonel.com")
 HOST = ORIGIN.split("//")[1]
 INDEXNOW_KEY = "5be19f56d46ca3d2553bee28ebfa8edd"
-SLUG = SITE["repo"].split("/")[1]
+SLUG = SITE["site_id"]
 TRACK_API = "https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec"
 
 
@@ -192,8 +192,19 @@ def main():
     for f in sorted(OUT.rglob("*")):
         if f.is_file() and f.suffix in (".html", ".js", ".css", ".json", ".xml", ".txt", ".svg"):
             text = f.read_text(encoding="utf-8")
-            if re.search(r"vread", text.replace("github.com/VREAD-corp/", ""), re.I):  # repo links: see step 4
+            if re.search(r"vread", text, re.I):
                 errors.append(f"{f.relative_to(OUT)}: mentions vread")
+            if re.search(r"(?<![.\w])github\.com/[A-Za-z]|/issues\b|code source|source code", text, re.I):
+                errors.append(f"{f.relative_to(OUT)}: GitHub repository / issues / source-code link")
+    pdfs = sorted(p.name for p in (OUT / "telechargements").glob("*.pdf"))
+    if pdfs != sorted(s.stem + ".pdf" for s in (ROOT / "pdf").glob("*.html")):
+        errors.append(f"telechargements/ does not hold one PDF per pdf/*.html source: {pdfs}")
+    for name in pdfs:
+        if not (OUT / "telechargements" / name).read_bytes().startswith(b"%PDF-"):
+            errors.append(f"telechargements/{name} is not a PDF")
+        if not any(f'href="{BASE}telechargements/{name}" data-mesure="free_download"' in (OUT / r).read_text(encoding="utf-8")
+                   for r in pages):
+            errors.append(f"telechargements/{name}: no page links it with data-mesure=free_download")
     for rel, p in pages.items():
         if "mailto:contact@jalonel.com" not in p.links:
             errors.append(f"{rel}: footer has no mailto:contact@jalonel.com")

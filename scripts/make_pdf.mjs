@@ -1,6 +1,6 @@
 // Renders pdf/*.html to dist/*.pdf and assets/og.html to assets/og.png
 // with headless Chromium (Playwright). Usage: node scripts/make_pdf.mjs
-// Optional env CHROME_PATH to use an already-installed Chromium binary.
+// Optional env CHROME_PATH to use an already-installed Chromium binary; PDF_ONLY=1 skips og.png.
 import { chromium } from "playwright";
 import { readdirSync, mkdirSync, existsSync } from "node:fs";
 import { resolve, basename } from "node:path";
@@ -30,7 +30,7 @@ for (const f of readdirSync(resolve(root, "pdf")).filter((n) => n.endsWith(".htm
 }
 
 const og = resolve(root, "scripts", "og.html");
-if (existsSync(og)) {
+if (!process.env.PDF_ONLY && existsSync(og)) {
   await page.setViewportSize({ width: 1200, height: 630 });
   await page.goto(pathToFileURL(og).href);
   await page.screenshot({ path: resolve(root, "assets", "og.png") });

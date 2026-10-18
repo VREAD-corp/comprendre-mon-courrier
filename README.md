@@ -11,7 +11,7 @@ séjour, CPAM, URSSAF, amendes) : ce que c'est, délais à vérifier, quoi faire
 n° 71-1130 et réponse du ministère de la Justice du 8 avril 2025 à la question écrite n° 3177). Aucun envoi de courrier,
 aucune donnée personnelle collectée. Non affilié à une administration.
 
-Téléchargements gratuits (GitHub Releases) : `checklist-courrier-administratif-fr.pdf`, `checklist-official-letter-en.pdf`
+Téléchargements gratuits (servis par le site, `/telechargements/`) : `checklist-courrier-administratif-fr.pdf`, `checklist-official-letter-en.pdf`
 
 Version payante (Courrier clair+, 4,90 €/mois) : **pas encore disponible**, aucun paiement possible.
 
@@ -36,9 +36,8 @@ aucun identifiant, rien sous Do Not Track / GPC ; nos tests ajoutent `?octave_no
 - `tests/test_site.py` — vérifications ; `scripts/make_pdf.mjs` — rendu PDF ; `scripts/check_live.mjs` — contrôle en ligne
 
 ```sh
+npm i && node scripts/make_pdf.mjs   # PDF dans dist/, copiés par build.py dans _site/telechargements/
 python3 build.py && python3 tests/test_site.py
-npm i && node scripts/make_pdf.mjs
 ```
 
-Contenus : CC BY 4.0. Code : MIT. Signaler une erreur : onglet Issues (tickets publics : **aucune donnée personnelle**,
-ne décrivez pas votre situation).
+Contenus : CC BY 4.0. Code : MIT. Contact et signalement d'erreur : contact@jalonel.com.

@@ -19,6 +19,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install chromium
+      - run: node scripts/make_pdf.mjs
+        env:
+          PDF_ONLY: "1"
       - run: python build.py
       - run: python tests/test_site.py
       - run: node tests/cro.check.mjs assets/cro.js

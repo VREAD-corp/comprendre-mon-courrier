@@ -4,7 +4,7 @@
 Reads site.json + content/**/*.html fragments (front matter in a leading
 HTML comment), wraps them in one layout and writes _site/ with sitemap.xml,
 robots.txt, CNAME, the IndexNow key file and 404.html. Placeholders usable in fragments: {{base}}, {{asset}},
-{{release}} (latest-release download base URL), {{issues}}, {{repo_url}}.
+{{downloads}} (base URL of the free PDFs served by the site itself).
 """
 import hashlib
 import html
@@ -16,6 +16,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
+# Free PDFs: rendered from pdf/*.html into dist/ by scripts/make_pdf.mjs (run by the Pages workflow before this
+# script), published at /telechargements/<name>.pdf.
+DOWNLOADS = "telechargements"
 
 
 def load_site():
@@ -23,9 +26,7 @@ def load_site():
     # Served at the root of its own Jalonel subdomain since 2026-10-16.
     site.setdefault("base", "/")
     site["origin"] = site.get("origin", "https://courrier.jalonel.com")
-    site["repo_url"] = "https://github.com/" + site["repo"]
-    site["release"] = site["repo_url"] + "/releases/latest/download/"
-    site["issues"] = site["repo_url"] + "/issues"
+    site["downloads"] = site["base"] + DOWNLOADS + "/"
     return site
 
 
@@ -35,7 +36,7 @@ def load_site():
 TRACK_API = "https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec"
 MESURE_V = hashlib.sha256((ROOT / "assets" / "mesure.js").read_bytes()).hexdigest()[:8]
 CRO_V = hashlib.sha256((ROOT / "assets" / "cro.js").read_bytes()).hexdigest()[:8]
-# Links whose clicks mesure.js counts (data-mesure): free PDFs (GitHub Releases) and the paid-version page.
+# Links whose clicks mesure.js counts (data-mesure): free PDFs (/telechargements/) and the paid-version page.
 A_RE = re.compile(r'<a\b([^>]*)>')
 
 
@@ -46,7 +47,7 @@ def tag_links(page):
             return m.group(0)
         href = re.search(r'href="([^"]*)"', attrs)
         href = href.group(1) if href else ""
-        if "/releases/latest/download/" in href or "/releases/download/" in href:
+        if href.startswith("/" + DOWNLOADS + "/") and href.endswith(".pdf"):
             return f'<a{attrs} data-mesure="free_download">'
         if re.search(r"version-payante\.html(#|$)", href):
             return f'<a{attrs} data-mesure="cta_click">'
@@ -55,7 +56,7 @@ def tag_links(page):
 
 
 def tracking_tags(site):
-    slug = site["repo"].split("/")[1]
+    slug = site["site_id"]
     return (f'<script src="{site["base"]}assets/mesure.js?v={MESURE_V}" defer></script>\n'
             f'<script src="{site["base"]}assets/cro.js?v={CRO_V}" data-site="{slug}" data-api="{TRACK_API}" '
             f'data-hosts="{site["origin"].split("//")[1]}" data-cta="[data-mesure]" defer></script>')
@@ -98,7 +99,7 @@ def parse(path):
 
 
 def fill(text, site):
-    for key in ("base", "release", "issues", "repo_url"):
+    for key in ("base", "downloads"):
         text = text.replace("{{" + key + "}}", site[key])
     return text
 
@@ -208,6 +209,12 @@ def main():
         shutil.rmtree(OUT)
     OUT.mkdir()
     shutil.copytree(ROOT / "assets", OUT / "assets")
+    (OUT / DOWNLOADS).mkdir()
+    for src in sorted((ROOT / "pdf").glob("*.html")):
+        pdf = ROOT / "dist" / (src.stem + ".pdf")
+        if not pdf.exists():
+            sys.exit(f"missing {pdf.relative_to(ROOT)}: run node scripts/make_pdf.mjs first")
+        shutil.copy2(pdf, OUT / DOWNLOADS / pdf.name)
     pages = []
     for src in sorted((ROOT / "content").rglob("*.html")):
         rel = src.relative_to(ROOT / "content").as_posix()

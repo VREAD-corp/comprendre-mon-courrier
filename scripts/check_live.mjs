@@ -34,10 +34,9 @@ for (const url of urls) {
 }
 
 async function status(u) {
-  // GitHub release asset URLs are checked without downloading (HEAD, no redirect follow)
-  // so verification does not inflate the download-count KPI.
-  const asset = /\/releases\/(latest\/)?download\//.test(u);
-  const opts = { redirect: asset ? "manual" : "follow", headers: { "user-agent": "Mozilla/5.0 site-check" } };
+  // Same-site PDFs (/telechargements/) are checked with HEAD only.
+  const asset = /\/telechargements\/[^/]+\.pdf$/.test(u);
+  const opts = { redirect: "follow", headers: { "user-agent": "Mozilla/5.0 site-check" } };
   try {
     let r = await fetch(u, { ...opts, method: "HEAD" });
     if (!asset && (r.status === 405 || r.status === 403 || r.status === 404 || r.status >= 500)) r = await fetch(u, { ...opts, method: "GET" });
@@ -48,7 +47,7 @@ async function status(u) {
 }
 for (const [u, from] of links) {
   const s = await status(u);
-  const ok = typeof s === "number" && (s < 400 || (s === 302 && /releases/.test(u)));
+  const ok = typeof s === "number" && s < 400;
   if (!ok) report.badLinks.push({ url: u, status: s, from: [...from].slice(0, 3) });
 }
 report.linksChecked = links.size;
